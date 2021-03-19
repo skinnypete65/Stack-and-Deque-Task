@@ -184,6 +184,67 @@ string fromInfixToPrefix(string s) {
 	return prefix;
 }
 
+void makeOperation(Stack<int>& operandStack, Stack<char>& operStack) {
+	int operand2 = operandStack.pop();
+	int operand1 = operandStack.pop();
+	char operation = operStack.pop();
+
+	if (operation == '+') operandStack.push(operand1 + operand2);
+	else if (operation == '-') operandStack.push(operand1 - operand2);
+	else if (operation == '*') operandStack.push(operand1 * operand2);
+	else if (operation == '/') operandStack.push(operand1 / operand2);
+}
+
+int calculateInfix(string s) {
+	string infix = s;
+	string strNum = "";
+	int num;
+	int Error = 0; // if Error = 0, everything if OK
+	Stack<int> operandStack; // Stack with numbers
+	Stack<char> operStack; // Stack with operations
+	for (char ch : infix) {
+		if (ch == '(') operStack.push(ch);
+		else if (ch == ')') {
+			if (strNum != "") {
+				operandStack.push(stoi(strNum));
+				strNum = "";
+			}
+			while (operStack.getTop() != '(') {
+				makeOperation(operandStack, operStack);
+			}
+			operStack.pop();
+		}
+		else if (!(isOperator(ch))) {
+			strNum += ch;
+		}
+		else {
+			if (strNum != "") {
+				operandStack.push(stoi(strNum));
+				strNum = "";
+			}
+			if (operStack.isEmpty() || operStack.getTop() == '(') {
+				operStack.push(ch);
+			}
+			else if (isHighPriority(ch) && isLowPriority(operStack.getTop())) {
+				operStack.push(ch);
+			}
+			else {
+				makeOperation(operandStack, operStack);
+
+				operStack.push(ch);
+			}
+
+		}
+	}
+	if (strNum != "") operandStack.push(stoi(strNum));
+	
+	while (!(operStack.isEmpty())) {
+		makeOperation(operandStack, operStack);
+	}
+
+	return operandStack.pop();
+}
+
 
 int main() {
 	setlocale(LC_ALL, "Russian");
@@ -197,6 +258,12 @@ int main() {
 	string prefix_1a = fromInfixToPrefix(infix_1a);
 	string prefix_1b = fromInfixToPrefix(infix_1b);
 
+	string infix_2a = "12+2*3-16/8*4";
+	string infix_2b = "12+(2*3-16/8)*4";
+
+	int result_2a = calculateInfix(infix_2a);
+	int result_2b = calculateInfix(infix_2b);
+
 	cout << "\tTask 1:" << endl;
 	cout << "a) Infix form: " << infix_1a << endl;
 	cout << "Postfix form: " << postfix_1a << endl;
@@ -204,6 +271,15 @@ int main() {
 	cout << "b) Infix form: " << infix_1b << endl;
 	cout << "Postfix form: " << postfix_1b << endl;
 	cout << "Prefix form: " << prefix_1b << endl;
+	cout << endl;
+
+	cout << "\tTask 2:" << endl;
+	cout << "a) Infix form: " << infix_2a << endl;
+	cout << "Result: " << result_2a << endl;
+	cout << "b) Infix form: " << infix_2b << endl;
+	cout << "Result: " << result_2b << endl;
+
+	
 	
 
 
