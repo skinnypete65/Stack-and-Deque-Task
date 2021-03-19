@@ -245,6 +245,32 @@ int calculateInfix(string s) {
 	return operandStack.pop();
 }
 
+int calculatePostfix(string s) {
+	string infix = s;
+	Stack<int> operandStack;
+	Stack<char> operStack;
+	string strNum;
+
+	for (char ch : infix) {
+		if (ch == ' ') {
+			operandStack.push(stoi(strNum));
+			strNum = "";
+		}
+		else if (isOperator(ch)) {
+			if (strNum != "") {
+				operandStack.push(stoi(strNum));
+				strNum = "";
+			}
+			operStack.push(ch);
+			makeOperation(operandStack, operStack);
+		}
+		else {
+			strNum += ch;
+		}
+	}
+
+	return operandStack.pop();
+}
 
 int main() {
 	setlocale(LC_ALL, "Russian");
@@ -264,6 +290,8 @@ int main() {
 	int result_2a = calculateInfix(infix_2a);
 	int result_2b = calculateInfix(infix_2b);
 
+	string postfix_4 = "12 2 3 *16 8 -*+";
+
 	cout << "\tTask 1:" << endl;
 	cout << "a) Infix form: " << infix_1a << endl;
 	cout << "Postfix form: " << postfix_1a << endl;
@@ -278,11 +306,12 @@ int main() {
 	cout << "Result: " << result_2a << endl;
 	cout << "b) Infix form: " << infix_2b << endl;
 	cout << "Result: " << result_2b << endl;
+	cout << endl;
 
-	
-	
-
-
+	cout << "\tTask4:" << endl;
+	cout << "Postfix form: " << postfix_4 << endl;
+	cout << calculatePostfix(postfix_4) << endl;
+	cout << endl;
 }
 
 
